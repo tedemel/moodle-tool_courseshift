@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version metadata for tool_courseshift.
+ * Scheduled tasks for tool_courseshift.
  *
  * @package    tool_courseshift
  * @copyright  2026 Tessa Demel
@@ -24,10 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_courseshift';
-$plugin->version   = 2026050200;
-$plugin->requires  = 2025041400;
-$plugin->supported = [500, 502];
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.1.0';
-$plugin->dependencies = [];
+$tasks = [
+    [
+        'classname' => 'tool_courseshift\\task\\cleanup_undo',
+        'blocking'  => 0,
+        'minute'    => '*/15',
+        'hour'      => '*',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*',
+    ],
+];

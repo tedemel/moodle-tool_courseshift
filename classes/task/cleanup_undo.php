@@ -15,19 +15,30 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version metadata for tool_courseshift.
+ * Scheduled task: expire stale tool_courseshift undo snapshots.
  *
  * @package    tool_courseshift
  * @copyright  2026 Tessa Demel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace tool_courseshift\task;
 
-$plugin->component = 'tool_courseshift';
-$plugin->version   = 2026050200;
-$plugin->requires  = 2025041400;
-$plugin->supported = [500, 502];
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.1.0';
-$plugin->dependencies = [];
+/**
+ * Class cleanup_undo.
+ */
+class cleanup_undo extends \core\task\scheduled_task {
+    /**
+     * get_name.
+     */
+    public function get_name(): string {
+        return get_string('task_cleanup_undo', 'tool_courseshift');
+    }
+
+    /**
+     * execute.
+     */
+    public function execute() {
+        \tool_courseshift\local\undo_store::expire_old();
+    }
+}
