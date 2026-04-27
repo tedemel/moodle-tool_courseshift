@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Unit tests for shifter.
@@ -29,6 +29,9 @@ namespace tool_courseshift\local;
  */
 final class shifter_test extends \advanced_testcase {
 
+    /**
+     * test_apply_anchor_shifts_course_and_content.
+     */
     public function test_apply_anchor_shifts_course_and_content(): void {
         global $DB;
         $this->resetAfterTest();
@@ -63,6 +66,9 @@ final class shifter_test extends \advanced_testcase {
         );
     }
 
+    /**
+     * test_apply_delta_shifts_only_when_includecontent_true.
+     */
     public function test_apply_delta_shifts_only_when_includecontent_true(): void {
         global $DB;
         $this->resetAfterTest();
@@ -90,6 +96,9 @@ final class shifter_test extends \advanced_testcase {
         );
     }
 
+    /**
+     * test_preview_does_not_modify_db.
+     */
     public function test_preview_does_not_modify_db(): void {
         global $DB;
         $this->resetAfterTest();

@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Date shifter for tool_courseshift.
@@ -24,8 +24,10 @@
 
 namespace tool_courseshift\local;
 
+/**
+ * Class shifter.
+ */
 class shifter {
-
     /**
      * Compute a preview of what the shift would do (no DB writes).
      */
@@ -133,6 +135,9 @@ class shifter {
         return ['courses' => $coursecount, 'cms' => $cmcount];
     }
 
+    /**
+     * compute_delta.
+     */
     private static function compute_delta($course, string $mode, int $anchordate, int $deltadays): int {
         if ($mode === 'anchor') {
             if ((int)$course->startdate > 0 && $anchordate > 0) {
@@ -143,6 +148,9 @@ class shifter {
         return (int)$deltadays * DAYSECS;
     }
 
+    /**
+     * pair.
+     */
     private static function pair(int $value, int $delta): array {
         if ($value <= 0) {
             return ['from' => 0, 'to' => 0, 'fromfmt' => '—', 'tofmt' => '—'];
@@ -156,6 +164,9 @@ class shifter {
         ];
     }
 
+    /**
+     * shift_activity_dates.
+     */
     private static function shift_activity_dates(int $courseid, int $delta): int {
         global $DB;
         $modinfo = get_fast_modinfo($courseid);
@@ -182,6 +193,9 @@ class shifter {
         return $touched;
     }
 
+    /**
+     * get_date_fields_for_module.
+     */
     private static function get_date_fields_for_module(string $modname, int $instanceid): array {
         global $DB;
         $known = [

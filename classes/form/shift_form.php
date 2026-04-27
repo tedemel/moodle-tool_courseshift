@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Course shift form.
@@ -28,8 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($GLOBALS['CFG']->libdir . '/formslib.php');
 
+/**
+ * Class shift_form.
+ */
 class shift_form extends \moodleform {
 
+    /**
+     * definition.
+     */
     protected function definition(): void {
         $mform = $this->_form;
 
@@ -64,6 +70,9 @@ class shift_form extends \moodleform {
         $this->add_action_buttons(true, get_string('submit', 'tool_courseshift'));
     }
 
+    /**
+     * validation.
+     */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);
         if (($data['mode'] ?? '') === 'delta' && (int)($data['deltadays'] ?? 0) === 0) {
