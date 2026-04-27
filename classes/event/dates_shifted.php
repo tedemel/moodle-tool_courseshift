@@ -30,7 +30,6 @@ defined('MOODLE_INTERNAL') || die();
  * Class dates_shifted.
  */
 class dates_shifted extends \core\event\base {
-
     /**
      * init.
      */

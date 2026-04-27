@@ -32,7 +32,6 @@ require_once($GLOBALS['CFG']->libdir . '/formslib.php');
  * Class shift_form.
  */
 class shift_form extends \moodleform {
-
     /**
      * definition.
      */

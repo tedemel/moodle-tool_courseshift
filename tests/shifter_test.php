@@ -25,10 +25,11 @@
 namespace tool_courseshift\local;
 
 /**
+ * Tests for shifter_test.
+ *
  * @covers \tool_courseshift\local\shifter
  */
 final class shifter_test extends \advanced_testcase {
-
     /**
      * test_apply_anchor_shifts_course_and_content.
      */

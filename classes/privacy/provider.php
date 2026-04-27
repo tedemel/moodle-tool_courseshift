@@ -28,7 +28,6 @@ namespace tool_courseshift\privacy;
  * Class provider.
  */
 class provider implements \core_privacy\local\metadata\null_provider {
-
     /**
      * get_reason.
      */
