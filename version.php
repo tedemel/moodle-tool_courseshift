@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_courseshift';
-$plugin->version   = 2026050200;
+$plugin->version   = 2026050300;
 $plugin->requires  = 2025041400;
 $plugin->supported = [500, 502];
 $plugin->maturity  = MATURITY_ALPHA;

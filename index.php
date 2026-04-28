@@ -160,6 +160,15 @@ $render_preview = function (
     echo $backbutton();
 };
 
+// === Action: cancel a pending scheduled shift ===
+if ($action === 'cancelschedule') {
+    require_sesskey();
+    $taskid = required_param('taskid', PARAM_INT);
+    \tool_courseshift\local\monitor::cancel($taskid);
+    redirect($pageurl, get_string('scheduled_cancelled', 'tool_courseshift'),
+        null, \core\output\notification::NOTIFY_SUCCESS);
+}
+
 // === Action: undo ===
 if ($action === 'undo') {
     require_sesskey();
@@ -365,6 +374,98 @@ JS);
         $pageurl, $backbutton);
     echo $OUTPUT->footer();
     return;
+}
+
+// === Monitor panel: pending scheduled shifts + recent history. ===
+$pending = \tool_courseshift\local\monitor::pending();
+$recent  = \tool_courseshift\local\monitor::recent(8);
+
+echo \html_writer::start_div('card mb-3');
+echo \html_writer::start_div('card-body');
+echo \html_writer::tag('h4', get_string('scheduled_pending_heading', 'tool_courseshift'),
+    ['class' => 'h5 mb-3']);
+if (empty($pending)) {
+    echo \html_writer::tag('p', get_string('scheduled_no_pending', 'tool_courseshift'),
+        ['class' => 'text-muted mb-0']);
+} else {
+    $ptable = new \html_table();
+    $ptable->head = [
+        get_string('monitor_pending_runtime', 'tool_courseshift'),
+        get_string('monitor_pending_user', 'tool_courseshift'),
+        get_string('monitor_pending_summary', 'tool_courseshift'),
+        get_string('monitor_pending_mode', 'tool_courseshift'),
+        '',
+    ];
+    $ptable->attributes['class'] = 'table table-sm';
+    foreach ($pending as $task) {
+        $cd = json_decode($task->customdata) ?: new \stdClass();
+        $cids = (array)($cd->courseids ?? []);
+        $modeval = (string)($cd->mode ?? 'anchor');
+        $user = $DB->get_record('user', ['id' => $task->userid], 'id, firstname, lastname');
+        $cancelform = \html_writer::start_tag('form', ['method' => 'post', 'action' => $pageurl,
+            'class' => 'd-inline']);
+        $cancelform .= \html_writer::empty_tag('input', ['type' => 'hidden',
+            'name' => 'sesskey', 'value' => sesskey()]);
+        $cancelform .= \html_writer::empty_tag('input', ['type' => 'hidden',
+            'name' => 'action', 'value' => 'cancelschedule']);
+        $cancelform .= \html_writer::empty_tag('input', ['type' => 'hidden',
+            'name' => 'taskid', 'value' => (int)$task->id]);
+        $cancelform .= \html_writer::empty_tag('input', ['type' => 'submit',
+            'class' => 'btn btn-sm btn-outline-danger',
+            'value' => get_string('scheduled_cancel', 'tool_courseshift')]);
+        $cancelform .= \html_writer::end_tag('form');
+        $ptable->data[] = [
+            userdate((int)$task->nextruntime),
+            $user ? fullname($user) : '#' . (int)$task->userid,
+            count($cids),
+            $modeval,
+            $cancelform,
+        ];
+    }
+    echo \html_writer::table($ptable);
+}
+echo \html_writer::end_div();
+echo \html_writer::end_div();
+
+if (!empty($recent)) {
+    echo \html_writer::start_div('card mb-3');
+    echo \html_writer::start_div('card-body');
+    echo \html_writer::tag('h4', get_string('monitor_recent_heading', 'tool_courseshift'),
+        ['class' => 'h5 mb-3']);
+    $rtable = new \html_table();
+    $rtable->head = [
+        get_string('monitor_recent_when', 'tool_courseshift'),
+        get_string('monitor_recent_user', 'tool_courseshift'),
+        get_string('monitor_recent_courses', 'tool_courseshift'),
+        get_string('monitor_recent_cms', 'tool_courseshift'),
+        get_string('monitor_recent_events', 'tool_courseshift'),
+    ];
+    $rtable->attributes['class'] = 'table table-sm';
+    foreach ($recent as $log) {
+        $other = json_decode($log->other) ?: new \stdClass();
+        $user = $DB->get_record('user', ['id' => $log->userid], 'id, firstname, lastname');
+        $rtable->data[] = [
+            userdate((int)$log->timecreated),
+            $user ? fullname($user) : '#' . (int)$log->userid,
+            (int)($other->courses ?? 0),
+            (int)($other->cms ?? 0),
+            (int)($other->events ?? 0),
+        ];
+    }
+    echo \html_writer::table($rtable);
+    $logurl = new moodle_url('/report/log/index.php', [
+        'id' => 0, 'modid' => 'site_errors',
+    ]);
+    echo \html_writer::tag('p',
+        \html_writer::link(
+            new moodle_url('/report/log/index.php', ['id' => 1]),
+            get_string('monitor_recent_more', 'tool_courseshift'),
+            ['class' => 'small']
+        ),
+        ['class' => 'mb-0']
+    );
+    echo \html_writer::end_div();
+    echo \html_writer::end_div();
 }
 
 // "Select all in category" shortcut button if categoryid is set.
