@@ -31,7 +31,14 @@ class shifter {
     /**
      * Compute a preview of what the shift would do (no DB writes).
      */
-    public static function preview(array $courseids, string $mode, int $anchordate, int $deltadays, bool $includecontent, ?array $percoursedates = null): array {
+    public static function preview(
+        array $courseids,
+        string $mode,
+        int $anchordate,
+        int $deltadays,
+        bool $includecontent,
+        ?array $percoursedates = null
+    ): array {
         global $DB;
         $rows = [];
         foreach ($courseids as $courseid) {
@@ -101,7 +108,14 @@ class shifter {
      *
      * @return array ['courses'=>int, 'cms'=>int]
      */
-    public static function apply(array $courseids, string $mode, int $anchordate, int $deltadays, bool $includecontent, ?array $percoursedates = null): array {
+    public static function apply(
+        array $courseids,
+        string $mode,
+        int $anchordate,
+        int $deltadays,
+        bool $includecontent,
+        ?array $percoursedates = null
+    ): array {
         global $DB, $USER;
         $coursecount = 0;
         $cmcount = 0;
@@ -294,7 +308,10 @@ class shifter {
             'choice'   => ['timeopen', 'timeclose'],
             'workshop' => ['submissionstart', 'submissionend', 'assessmentstart', 'assessmentend'],
             'feedback' => ['timeopen', 'timeclose'],
-            'data'     => ['timeavailablefrom', 'timeavailableto', 'timeviewfrom', 'timeviewto', 'assesstimestart', 'assesstimefinish'],
+            'data'     => [
+                'timeavailablefrom', 'timeavailableto', 'timeviewfrom',
+                'timeviewto', 'assesstimestart', 'assesstimefinish',
+            ],
             'scorm'    => ['timeopen', 'timeclose'],
             'chat'     => ['chattime'],
         ];
