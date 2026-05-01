@@ -24,6 +24,8 @@
 
 namespace tool_courseshift\form;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($GLOBALS['CFG']->libdir . '/formslib.php');
 
 /**

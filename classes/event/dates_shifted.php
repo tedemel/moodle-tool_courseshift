@@ -24,8 +24,6 @@
 
 namespace tool_courseshift\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class dates_shifted.
  */

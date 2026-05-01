@@ -171,7 +171,7 @@ $renderpreview = function (
     echo $backbutton();
 };
 
-// === Action: cancel a pending scheduled shift ===
+// Action — cancel a pending scheduled shift.
 if ($action === 'cancelschedule') {
     require_sesskey();
     $taskid = required_param('taskid', PARAM_INT);
@@ -184,7 +184,7 @@ if ($action === 'cancelschedule') {
     );
 }
 
-// === Action: undo ===
+// Action — undo.
 if ($action === 'undo') {
     require_sesskey();
     $undoid = required_param('undoid', PARAM_INT);
@@ -206,7 +206,7 @@ if ($action === 'undo') {
     return;
 }
 
-// === Action: schedule (queue adhoc task) ===
+// Action — schedule (queue adhoc task).
 if ($action === 'schedule') {
     require_sesskey();
     $courseids = optional_param_array('courseids', [], PARAM_INT);
@@ -240,7 +240,7 @@ if ($action === 'schedule') {
     return;
 }
 
-// === Action: apply ===
+// Action — apply.
 if ($action === 'apply') {
     require_sesskey();
     $courseids = optional_param_array('courseids', [], PARAM_INT);
@@ -295,7 +295,7 @@ if ($action === 'apply') {
     return;
 }
 
-// === Action: preview (POSTed from percourse-input form) ===
+// Action — preview (POSTed from percourse-input form).
 if ($action === 'preview') {
     require_sesskey();
     $courseids = optional_param_array('courseids', [], PARAM_INT);
@@ -321,7 +321,7 @@ if ($action === 'preview') {
     return;
 }
 
-// === Default: form. ===
+// Default — form.
 $form = new \tool_courseshift\form\shift_form();
 if ($form->is_cancelled()) {
     redirect($backurl);
@@ -441,7 +441,7 @@ JS);
     return;
 }
 
-// === Monitor panel: pending scheduled shifts + recent history. ===
+// Monitor panel — pending scheduled shifts + recent history.
 $pending = \tool_courseshift\local\monitor::pending();
 $recent  = \tool_courseshift\local\monitor::recent(8);
 
@@ -546,7 +546,7 @@ if (!empty($recent)) {
     echo \html_writer::end_div();
 }
 
-// "Select all in category" shortcut button if categoryid is set.
+// Select-all-in-category shortcut button if categoryid is set.
 if ($categoryid > 0) {
     $cat = core_course_category::get($categoryid, IGNORE_MISSING);
     if ($cat) {
