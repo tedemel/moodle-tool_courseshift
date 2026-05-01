@@ -56,10 +56,8 @@ $backbutton = function () use ($backurl) {
     );
 };
 
-/**
- * Render the preview cards + apply form (or schedule-queue form).
- */
-$render_preview = function (
+// Render the preview cards + apply form (or schedule-queue form).
+$renderpreview = function (
     array $courseids,
     string $mode,
     int $anchordate,
@@ -72,7 +70,12 @@ $render_preview = function (
 ) {
     global $OUTPUT;
     $rows = \tool_courseshift\local\shifter::preview(
-        $courseids, $mode, $anchordate, $deltadays, $includecontent, $percoursedates
+        $courseids,
+        $mode,
+        $anchordate,
+        $deltadays,
+        $includecontent,
+        $percoursedates
     );
 
     if (empty($rows)) {
@@ -124,24 +127,27 @@ $render_preview = function (
     }
 
     // Apply form (with all params + optional schedule).
+    $hidden = function (string $name, $value): string {
+        return \html_writer::empty_tag('input', [
+            'type'  => 'hidden',
+            'name'  => $name,
+            'value' => $value,
+        ]);
+    };
     echo \html_writer::start_tag('form', ['method' => 'post', 'action' => $pageurl]);
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action',
-        'value' => $scheduled > 0 ? 'schedule' : 'apply']);
+    echo $hidden('sesskey', sesskey());
+    echo $hidden('action', $scheduled > 0 ? 'schedule' : 'apply');
     foreach ($courseids as $cid) {
-        echo \html_writer::empty_tag('input', ['type' => 'hidden',
-            'name' => 'courseids[]', 'value' => (int)$cid]);
+        echo $hidden('courseids[]', (int)$cid);
     }
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'mode', 'value' => $mode]);
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'anchordate', 'value' => $anchordate]);
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'deltadays', 'value' => $deltadays]);
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'includecontent',
-        'value' => $includecontent ? 1 : 0]);
-    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'scheduled', 'value' => $scheduled]);
+    echo $hidden('mode', $mode);
+    echo $hidden('anchordate', $anchordate);
+    echo $hidden('deltadays', $deltadays);
+    echo $hidden('includecontent', $includecontent ? 1 : 0);
+    echo $hidden('scheduled', $scheduled);
     if (is_array($percoursedates)) {
         foreach ($percoursedates as $cid => $ts) {
-            echo \html_writer::empty_tag('input', ['type' => 'hidden',
-                'name' => "percoursedates[{$cid}]", 'value' => (int)$ts]);
+            echo $hidden("percoursedates[{$cid}]", (int)$ts);
         }
     }
 
@@ -150,12 +156,17 @@ $render_preview = function (
     } else {
         $btnlabel = get_string('confirm', 'tool_courseshift');
     }
-    echo \html_writer::tag('div', \html_writer::empty_tag('input', [
+    $submitbtn = \html_writer::empty_tag('input', [
         'type'  => 'submit',
         'class' => 'btn btn-primary me-2',
         'value' => $btnlabel,
-    ]) . \html_writer::link($pageurl, get_string('confirm_back', 'tool_courseshift'),
-        ['class' => 'btn btn-secondary']), ['class' => 'mt-3']);
+    ]);
+    $cancellink = \html_writer::link(
+        $pageurl,
+        get_string('confirm_back', 'tool_courseshift'),
+        ['class' => 'btn btn-secondary']
+    );
+    echo \html_writer::tag('div', $submitbtn . $cancellink, ['class' => 'mt-3']);
     echo \html_writer::end_tag('form');
     echo $backbutton();
 };
@@ -165,8 +176,12 @@ if ($action === 'cancelschedule') {
     require_sesskey();
     $taskid = required_param('taskid', PARAM_INT);
     \tool_courseshift\local\monitor::cancel($taskid);
-    redirect($pageurl, get_string('scheduled_cancelled', 'tool_courseshift'),
-        null, \core\output\notification::NOTIFY_SUCCESS);
+    redirect(
+        $pageurl,
+        get_string('scheduled_cancelled', 'tool_courseshift'),
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
 }
 
 // === Action: undo ===
@@ -236,7 +251,12 @@ if ($action === 'apply') {
     $percoursedates = optional_param_array('percoursedates', [], PARAM_INT);
 
     $result = \tool_courseshift\local\shifter::apply(
-        $courseids, $mode, $anchordate, $deltadays, $includecontent, $percoursedates ?: null
+        $courseids,
+        $mode,
+        $anchordate,
+        $deltadays,
+        $includecontent,
+        $percoursedates ?: null
     );
 
     echo $OUTPUT->header();
@@ -247,14 +267,27 @@ if ($action === 'apply') {
     );
 
     if (!empty($result['undoid'])) {
-        echo \html_writer::start_tag('form', ['method' => 'post', 'action' => $pageurl,
-            'class' => 'd-inline-block me-2']);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'undo']);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'undoid',
-            'value' => (int)$result['undoid']]);
-        echo \html_writer::empty_tag('input', ['type' => 'submit', 'class' => 'btn btn-warning',
-            'value' => get_string('undo_button', 'tool_courseshift')]);
+        $formattrs = [
+            'method' => 'post',
+            'action' => $pageurl,
+            'class'  => 'd-inline-block me-2',
+        ];
+        $hiddeninput = function (string $name, $value): string {
+            return \html_writer::empty_tag('input', [
+                'type'  => 'hidden',
+                'name'  => $name,
+                'value' => $value,
+            ]);
+        };
+        echo \html_writer::start_tag('form', $formattrs);
+        echo $hiddeninput('sesskey', sesskey());
+        echo $hiddeninput('action', 'undo');
+        echo $hiddeninput('undoid', (int)$result['undoid']);
+        echo \html_writer::empty_tag('input', [
+            'type'  => 'submit',
+            'class' => 'btn btn-warning',
+            'value' => get_string('undo_button', 'tool_courseshift'),
+        ]);
         echo \html_writer::end_tag('form');
     }
     echo $backbutton();
@@ -273,8 +306,17 @@ if ($action === 'preview') {
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('pagetitle', 'tool_courseshift'));
-    $render_preview($courseids, $mode, 0, 0, $includecontent, $scheduled, $percoursedates ?: null,
-        $pageurl, $backbutton);
+    $renderpreview(
+        $courseids,
+        $mode,
+        0,
+        0,
+        $includecontent,
+        $scheduled,
+        $percoursedates ?: null,
+        $pageurl,
+        $backbutton
+    );
     echo $OUTPUT->footer();
     return;
 }
@@ -298,17 +340,26 @@ if ($data = $form->get_data()) {
 
     if ($mode === 'percourse') {
         // Render per-course date input form (HTML, not moodleform).
+        $hiddeninput = function (string $name, $value): string {
+            return \html_writer::empty_tag('input', [
+                'type'  => 'hidden',
+                'name'  => $name,
+                'value' => $value,
+            ]);
+        };
         echo \html_writer::tag('h4', get_string('percourse_heading', 'tool_courseshift'));
-        echo \html_writer::tag('p', get_string('percourse_intro', 'tool_courseshift'),
-            ['class' => 'text-muted']);
+        echo \html_writer::tag(
+            'p',
+            get_string('percourse_intro', 'tool_courseshift'),
+            ['class' => 'text-muted']
+        );
 
         echo \html_writer::start_tag('form', ['method' => 'post', 'action' => $pageurl]);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'preview']);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'mode', 'value' => 'percourse']);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'includecontent',
-            'value' => $includecontent ? 1 : 0]);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'scheduled', 'value' => $scheduled]);
+        echo $hiddeninput('sesskey', sesskey());
+        echo $hiddeninput('action', 'preview');
+        echo $hiddeninput('mode', 'percourse');
+        echo $hiddeninput('includecontent', $includecontent ? 1 : 0);
+        echo $hiddeninput('scheduled', $scheduled);
 
         $table = new \html_table();
         $table->head = ['Kurs', 'Aktuelles Startdatum', 'Neues Startdatum'];
@@ -338,12 +389,17 @@ if ($data = $form->get_data()) {
             $table->data[] = [format_string($course->fullname), $cur, $input];
         }
         echo \html_writer::table($table);
-        echo \html_writer::tag('div', \html_writer::empty_tag('input', [
-            'type' => 'submit',
+        $submitbtn = \html_writer::empty_tag('input', [
+            'type'  => 'submit',
             'class' => 'btn btn-primary me-2',
             'value' => get_string('percourse_continue', 'tool_courseshift'),
-        ]) . \html_writer::link($pageurl, get_string('confirm_back', 'tool_courseshift'),
-            ['class' => 'btn btn-secondary']), ['class' => 'mt-3']);
+        ]);
+        $cancellink = \html_writer::link(
+            $pageurl,
+            get_string('confirm_back', 'tool_courseshift'),
+            ['class' => 'btn btn-secondary']
+        );
+        echo \html_writer::tag('div', $submitbtn . $cancellink, ['class' => 'mt-3']);
         echo \html_writer::end_tag('form');
         // JS: convert datetime-local strings into Unix timestamps in percoursedates[] before submit.
         $PAGE->requires->js_amd_inline(<<<'JS'
@@ -370,8 +426,17 @@ JS);
     }
 
     // Anchor/delta: directly preview.
-    $render_preview($courseids, $mode, $anchordate, $deltadays, $includecontent, $scheduled, null,
-        $pageurl, $backbutton);
+    $renderpreview(
+        $courseids,
+        $mode,
+        $anchordate,
+        $deltadays,
+        $includecontent,
+        $scheduled,
+        null,
+        $pageurl,
+        $backbutton
+    );
     echo $OUTPUT->footer();
     return;
 }
@@ -382,11 +447,17 @@ $recent  = \tool_courseshift\local\monitor::recent(8);
 
 echo \html_writer::start_div('card mb-3');
 echo \html_writer::start_div('card-body');
-echo \html_writer::tag('h4', get_string('scheduled_pending_heading', 'tool_courseshift'),
-    ['class' => 'h5 mb-3']);
+echo \html_writer::tag(
+    'h4',
+    get_string('scheduled_pending_heading', 'tool_courseshift'),
+    ['class' => 'h5 mb-3']
+);
 if (empty($pending)) {
-    echo \html_writer::tag('p', get_string('scheduled_no_pending', 'tool_courseshift'),
-        ['class' => 'text-muted mb-0']);
+    echo \html_writer::tag(
+        'p',
+        get_string('scheduled_no_pending', 'tool_courseshift'),
+        ['class' => 'text-muted mb-0']
+    );
 } else {
     $ptable = new \html_table();
     $ptable->head = [
@@ -402,17 +473,26 @@ if (empty($pending)) {
         $cids = (array)($cd->courseids ?? []);
         $modeval = (string)($cd->mode ?? 'anchor');
         $user = $DB->get_record('user', ['id' => $task->userid], 'id, firstname, lastname');
-        $cancelform = \html_writer::start_tag('form', ['method' => 'post', 'action' => $pageurl,
-            'class' => 'd-inline']);
-        $cancelform .= \html_writer::empty_tag('input', ['type' => 'hidden',
-            'name' => 'sesskey', 'value' => sesskey()]);
-        $cancelform .= \html_writer::empty_tag('input', ['type' => 'hidden',
-            'name' => 'action', 'value' => 'cancelschedule']);
-        $cancelform .= \html_writer::empty_tag('input', ['type' => 'hidden',
-            'name' => 'taskid', 'value' => (int)$task->id]);
-        $cancelform .= \html_writer::empty_tag('input', ['type' => 'submit',
+        $hiddencancel = function (string $name, $value): string {
+            return \html_writer::empty_tag('input', [
+                'type'  => 'hidden',
+                'name'  => $name,
+                'value' => $value,
+            ]);
+        };
+        $cancelform  = \html_writer::start_tag('form', [
+            'method' => 'post',
+            'action' => $pageurl,
+            'class'  => 'd-inline',
+        ]);
+        $cancelform .= $hiddencancel('sesskey', sesskey());
+        $cancelform .= $hiddencancel('action', 'cancelschedule');
+        $cancelform .= $hiddencancel('taskid', (int)$task->id);
+        $cancelform .= \html_writer::empty_tag('input', [
+            'type'  => 'submit',
             'class' => 'btn btn-sm btn-outline-danger',
-            'value' => get_string('scheduled_cancel', 'tool_courseshift')]);
+            'value' => get_string('scheduled_cancel', 'tool_courseshift'),
+        ]);
         $cancelform .= \html_writer::end_tag('form');
         $ptable->data[] = [
             userdate((int)$task->nextruntime),
@@ -430,8 +510,11 @@ echo \html_writer::end_div();
 if (!empty($recent)) {
     echo \html_writer::start_div('card mb-3');
     echo \html_writer::start_div('card-body');
-    echo \html_writer::tag('h4', get_string('monitor_recent_heading', 'tool_courseshift'),
-        ['class' => 'h5 mb-3']);
+    echo \html_writer::tag(
+        'h4',
+        get_string('monitor_recent_heading', 'tool_courseshift'),
+        ['class' => 'h5 mb-3']
+    );
     $rtable = new \html_table();
     $rtable->head = [
         get_string('monitor_recent_when', 'tool_courseshift'),
@@ -453,17 +536,12 @@ if (!empty($recent)) {
         ];
     }
     echo \html_writer::table($rtable);
-    $logurl = new moodle_url('/report/log/index.php', [
-        'id' => 0, 'modid' => 'site_errors',
-    ]);
-    echo \html_writer::tag('p',
-        \html_writer::link(
-            new moodle_url('/report/log/index.php', ['id' => 1]),
-            get_string('monitor_recent_more', 'tool_courseshift'),
-            ['class' => 'small']
-        ),
-        ['class' => 'mb-0']
+    $loglink = \html_writer::link(
+        new moodle_url('/report/log/index.php', ['id' => 1]),
+        get_string('monitor_recent_more', 'tool_courseshift'),
+        ['class' => 'small']
     );
+    echo \html_writer::tag('p', $loglink, ['class' => 'mb-0']);
     echo \html_writer::end_div();
     echo \html_writer::end_div();
 }
@@ -477,17 +555,16 @@ if ($categoryid > 0) {
         if ($count > 0) {
             $ids = array_keys($courseinfo);
             $idsjson = htmlspecialchars(json_encode(array_map('intval', $ids)), ENT_QUOTES);
-            echo \html_writer::tag('div',
-                \html_writer::tag('button',
-                    get_string('select_all_in_category', 'tool_courseshift', $count),
-                    [
-                        'type' => 'button',
-                        'class' => 'btn btn-outline-primary mb-2',
-                        'data-courseshift-select-ids' => $idsjson,
-                    ]
-                ),
-                ['class' => 'mb-3']
+            $btnhtml = \html_writer::tag(
+                'button',
+                get_string('select_all_in_category', 'tool_courseshift', $count),
+                [
+                    'type'                        => 'button',
+                    'class'                       => 'btn btn-outline-primary mb-2',
+                    'data-courseshift-select-ids' => $idsjson,
+                ]
             );
+            echo \html_writer::tag('div', $btnhtml, ['class' => 'mb-3']);
             $PAGE->requires->js_amd_inline(<<<'JS'
 require(['core/form-autocomplete'], function() {
     document.addEventListener('click', function(e) {
