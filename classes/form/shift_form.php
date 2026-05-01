@@ -78,6 +78,10 @@ class shift_form extends \moodleform {
 
     /**
      * validation.
+     *
+     * @param mixed $data
+     * @param mixed $files
+     * @return array
      */
     public function validation($data, $files): array {
         $errors = parent::validation($data, $files);

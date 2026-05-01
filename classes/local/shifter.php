@@ -30,6 +30,14 @@ namespace tool_courseshift\local;
 class shifter {
     /**
      * Compute a preview of what the shift would do (no DB writes).
+     *
+     * @param array $courseids
+     * @param string $mode
+     * @param int $anchordate
+     * @param int $deltadays
+     * @param bool $includecontent
+     * @param ?array $percoursedates
+     * @return array
      */
     public static function preview(
         array $courseids,
@@ -106,7 +114,13 @@ class shifter {
     /**
      * Apply the shift.
      *
-     * @return array ['courses'=>int, 'cms'=>int]
+     * @param array $courseids
+     * @param string $mode
+     * @param int $anchordate
+     * @param int $deltadays
+     * @param bool $includecontent
+     * @param ?array $percoursedates
+     * @return array
      */
     public static function apply(
         array $courseids,
@@ -203,6 +217,12 @@ class shifter {
 
     /**
      * compute_delta.
+     *
+     * @param mixed $course
+     * @param string $mode
+     * @param int $anchordate
+     * @param int $deltadays
+     * @return int
      */
     private static function compute_delta($course, string $mode, int $anchordate, int $deltadays): int {
         if ($mode === 'anchor') {
@@ -216,6 +236,10 @@ class shifter {
 
     /**
      * pair.
+     *
+     * @param int $value
+     * @param int $delta
+     * @return array
      */
     private static function pair(int $value, int $delta): array {
         if ($value <= 0) {
@@ -232,6 +256,10 @@ class shifter {
 
     /**
      * shift_activity_dates.
+     *
+     * @param int $courseid
+     * @param int $delta
+     * @return int
      */
     private static function shift_activity_dates(int $courseid, int $delta): int {
         return count(self::shift_activity_dates_with_snapshot($courseid, $delta));
@@ -240,7 +268,9 @@ class shifter {
     /**
      * Shift activity dates and return per-cm snapshot of pre-change values.
      *
-     * @return array list of ['modname', 'instance', 'fields' => [name=>oldvalue]]
+     * @param int $courseid
+     * @param int $delta
+     * @return array
      */
     private static function shift_activity_dates_with_snapshot(int $courseid, int $delta): array {
         global $DB;
@@ -277,7 +307,9 @@ class shifter {
     /**
      * Shift "course"-typed calendar events for one course; return pre-change snapshot.
      *
-     * @return array list of ['eventid', 'oldtimestart']
+     * @param int $courseid
+     * @param int $delta
+     * @return array
      */
     private static function shift_course_events_with_snapshot(int $courseid, int $delta): array {
         global $DB;
@@ -297,6 +329,10 @@ class shifter {
 
     /**
      * get_date_fields_for_module.
+     *
+     * @param string $modname
+     * @param int $instanceid
+     * @return array
      */
     private static function get_date_fields_for_module(string $modname, int $instanceid): array {
         global $DB;

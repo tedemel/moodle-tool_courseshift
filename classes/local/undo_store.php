@@ -33,6 +33,10 @@ class undo_store {
 
     /**
      * record.
+     *
+     * @param int $userid
+     * @param array $snapshot
+     * @return int
      */
     public static function record(int $userid, array $snapshot): int {
         global $DB;
@@ -45,6 +49,9 @@ class undo_store {
 
     /**
      * get.
+     *
+     * @param int $undoid
+     * @return ?\stdClass
      */
     public static function get(int $undoid): ?\stdClass {
         global $DB;
@@ -54,6 +61,8 @@ class undo_store {
 
     /**
      * delete.
+     *
+     * @param int $undoid
      */
     public static function delete(int $undoid): void {
         global $DB;

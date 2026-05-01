@@ -50,7 +50,7 @@ final class shifter_test extends \advanced_testcase {
             'duedate' => $duedate,
         ]);
 
-        $newstart = strtotime('2026-09-01 00:00'); // +3 months delta.
+        $newstart = strtotime('2026-09-01 00:00'); // Plus 3 months delta.
 
         $result = shifter::apply([$course->id], 'anchor', $newstart, 0, true);
 

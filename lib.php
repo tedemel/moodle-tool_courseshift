@@ -24,6 +24,9 @@
 
 /**
  * Add the link to category settings navigation.
+ *
+ * @param mixed $navigation
+ * @param mixed $context
  */
 function tool_courseshift_extend_navigation_category_settings($navigation, $context) {
     if (!has_capability('tool/courseshift:use', context_system::instance())) {
@@ -44,6 +47,10 @@ function tool_courseshift_extend_navigation_category_settings($navigation, $cont
 
 /**
  * Add the link to a course's settings navigation.
+ *
+ * @param mixed $navigation
+ * @param mixed $course
+ * @param mixed $context
  */
 function tool_courseshift_extend_navigation_course($navigation, $course, $context) {
     if (!has_capability('tool/courseshift:use', context_system::instance())) {

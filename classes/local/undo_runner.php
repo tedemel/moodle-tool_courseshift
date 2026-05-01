@@ -31,7 +31,8 @@ class undo_runner {
     /**
      * Restore the snapshot identified by $undoid.
      *
-     * @return array ['courses'=>int, 'cms'=>int, 'events'=>int]
+     * @param int $undoid
+     * @return array
      */
     public static function restore(int $undoid): array {
         global $DB, $USER;

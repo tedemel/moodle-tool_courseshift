@@ -24,6 +24,8 @@
 
 /**
  * xmldb_tool_courseshift_upgrade.
+ *
+ * @param mixed $oldversion
  */
 function xmldb_tool_courseshift_upgrade($oldversion) {
     global $DB;

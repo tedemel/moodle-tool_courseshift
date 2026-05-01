@@ -44,6 +44,9 @@ class monitor {
 
     /**
      * Cancel (delete) a pending scheduled_shift task by id.
+     *
+     * @param int $taskid
+     * @return bool
      */
     public static function cancel(int $taskid): bool {
         global $DB;
