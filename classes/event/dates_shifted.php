@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Event: dates_shifted.
@@ -24,19 +24,28 @@
 
 namespace tool_courseshift\event;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Class dates_shifted.
+ */
 class dates_shifted extends \core\event\base {
-
+    /**
+     * init.
+     */
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
+    /**
+     * get_name.
+     */
     public static function get_name() {
         return get_string('event_dates_shifted', 'tool_courseshift');
     }
 
+    /**
+     * get_description.
+     */
     public function get_description() {
         $courseids = implode(',', (array)($this->other['courseids'] ?? []));
         $cms = (int)($this->other['cms'] ?? 0);

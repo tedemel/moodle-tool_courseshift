@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Unit tests for shifter.
@@ -25,10 +25,14 @@
 namespace tool_courseshift\local;
 
 /**
+ * Tests for shifter_test.
+ *
  * @covers \tool_courseshift\local\shifter
  */
 final class shifter_test extends \advanced_testcase {
-
+    /**
+     * test_apply_anchor_shifts_course_and_content.
+     */
     public function test_apply_anchor_shifts_course_and_content(): void {
         global $DB;
         $this->resetAfterTest();
@@ -46,7 +50,7 @@ final class shifter_test extends \advanced_testcase {
             'duedate' => $duedate,
         ]);
 
-        $newstart = strtotime('2026-09-01 00:00'); // +3 months delta.
+        $newstart = strtotime('2026-09-01 00:00'); // Plus 3 months delta.
 
         $result = shifter::apply([$course->id], 'anchor', $newstart, 0, true);
 
@@ -63,6 +67,9 @@ final class shifter_test extends \advanced_testcase {
         );
     }
 
+    /**
+     * test_apply_delta_shifts_only_when_includecontent_true.
+     */
     public function test_apply_delta_shifts_only_when_includecontent_true(): void {
         global $DB;
         $this->resetAfterTest();
@@ -90,6 +97,9 @@ final class shifter_test extends \advanced_testcase {
         );
     }
 
+    /**
+     * test_preview_does_not_modify_db.
+     */
     public function test_preview_does_not_modify_db(): void {
         global $DB;
         $this->resetAfterTest();

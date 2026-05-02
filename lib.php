@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Library functions for tool_courseshift.
@@ -22,10 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Add the link to category settings navigation.
+ *
+ * @param mixed $navigation
+ * @param mixed $context
  */
 function tool_courseshift_extend_navigation_category_settings($navigation, $context) {
     if (!has_capability('tool/courseshift:use', context_system::instance())) {
@@ -46,6 +47,10 @@ function tool_courseshift_extend_navigation_category_settings($navigation, $cont
 
 /**
  * Add the link to a course's settings navigation.
+ *
+ * @param mixed $navigation
+ * @param mixed $course
+ * @param mixed $context
  */
 function tool_courseshift_extend_navigation_course($navigation, $course, $context) {
     if (!has_capability('tool/courseshift:use', context_system::instance())) {

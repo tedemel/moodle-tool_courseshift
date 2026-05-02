@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Capabilities for tool_courseshift.
+ * Scheduled tasks for tool_courseshift.
  *
  * @package    tool_courseshift
  * @copyright  2026 Tessa Demel
@@ -24,14 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = [
-
-    'tool/courseshift:use' => [
-        'riskbitmask'  => RISK_DATALOSS,
-        'captype'      => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes'   => [
-            'manager' => CAP_ALLOW,
-        ],
+$tasks = [
+    [
+        'classname' => 'tool_courseshift\\task\\cleanup_undo',
+        'blocking'  => 0,
+        'minute'    => '*/15',
+        'hour'      => '*',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*',
     ],
 ];

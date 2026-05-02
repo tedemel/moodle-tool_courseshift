@@ -15,23 +15,38 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Privacy provider for tool_courseshift.
+ * Adhoc task: deferred course-shift execution.
  *
  * @package    tool_courseshift
  * @copyright  2026 Tessa Demel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_courseshift\privacy;
+namespace tool_courseshift\task;
 
 /**
- * Class provider.
+ * Class scheduled_shift.
  */
-class provider implements \core_privacy\local\metadata\null_provider {
+class scheduled_shift extends \core\task\adhoc_task {
     /**
-     * get_reason.
+     * execute.
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public function execute() {
+        $data = (array)$this->get_custom_data();
+        $courseids = (array)($data['courseids'] ?? []);
+        $mode = (string)($data['mode'] ?? 'anchor');
+        $anchordate = (int)($data['anchordate'] ?? 0);
+        $deltadays = (int)($data['deltadays'] ?? 0);
+        $includecontent = (bool)($data['includecontent'] ?? false);
+        $percoursedates = isset($data['percoursedates']) ? (array)$data['percoursedates'] : null;
+
+        \tool_courseshift\local\shifter::apply(
+            $courseids,
+            $mode,
+            $anchordate,
+            $deltadays,
+            $includecontent,
+            $percoursedates
+        );
     }
 }
