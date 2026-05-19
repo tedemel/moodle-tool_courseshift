@@ -17,8 +17,8 @@ Aktivitäten über **mehrere Kurse gleichzeitig**.
 
 ## Anforderungen
 
-- Moodle 5.0 oder neuer (getestet auf 5.2)
-- PHP 8.2 oder neuer
+- Moodle 5.0, 5.1 oder 5.2
+- PHP 8.3 oder neuer (PHP 8.4 unterstützt)
 - User braucht `tool/courseshift:use` (default: manager + Site-Admin via Bypass)
 
 ## Installation
@@ -84,3 +84,7 @@ GPL v3 oder höher.
 ## Repository
 
 https://github.com/tedemel/moodle-tool_courseshift
+
+## Changelog
+
+Siehe [CHANGELOG.md](CHANGELOG.md).
