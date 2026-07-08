@@ -36,6 +36,7 @@ final class shifter_test extends \advanced_testcase {
     public function test_apply_anchor_shifts_course_and_content(): void {
         global $DB;
         $this->resetAfterTest();
+        $this->setAdminUser();
 
         $start = strtotime('2026-06-01 00:00');
         $end   = strtotime('2026-08-01 00:00');
@@ -73,6 +74,7 @@ final class shifter_test extends \advanced_testcase {
     public function test_apply_delta_shifts_only_when_includecontent_true(): void {
         global $DB;
         $this->resetAfterTest();
+        $this->setAdminUser();
 
         $start = strtotime('2026-06-01 00:00');
         $course = $this->getDataGenerator()->create_course(['startdate' => $start]);
@@ -103,6 +105,7 @@ final class shifter_test extends \advanced_testcase {
     public function test_preview_does_not_modify_db(): void {
         global $DB;
         $this->resetAfterTest();
+        $this->setAdminUser();
 
         $start = strtotime('2026-06-01 00:00');
         $course = $this->getDataGenerator()->create_course(['startdate' => $start]);

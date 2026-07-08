@@ -52,7 +52,7 @@ class shifter {
         foreach ($courseids as $courseid) {
             $courseid = (int)$courseid;
             $course = $DB->get_record('course', ['id' => $courseid]);
-            if (!$course) {
+            if (!$course || !self::can_shift_course($courseid)) {
                 continue;
             }
             if ($mode === 'percourse' && is_array($percoursedates)) {
@@ -140,7 +140,7 @@ class shifter {
         foreach ($courseids as $courseid) {
             $courseid = (int)$courseid;
             $course = $DB->get_record('course', ['id' => $courseid]);
-            if (!$course) {
+            if (!$course || !self::can_shift_course($courseid)) {
                 continue;
             }
             if ($mode === 'percourse' && is_array($percoursedates)) {
@@ -255,14 +255,16 @@ class shifter {
     }
 
     /**
-     * shift_activity_dates.
+     * The tool capability is system-wide, but the acting user must also be
+     * allowed to update each individual course. The form's course selector
+     * already enforces this; this guards the POSTed course id list and the
+     * adhoc-task path against forged or stale selections.
      *
      * @param int $courseid
-     * @param int $delta
-     * @return int
+     * @return bool
      */
-    private static function shift_activity_dates(int $courseid, int $delta): int {
-        return count(self::shift_activity_dates_with_snapshot($courseid, $delta));
+    private static function can_shift_course(int $courseid): bool {
+        return has_capability('moodle/course:update', \context_course::instance($courseid));
     }
 
     /**

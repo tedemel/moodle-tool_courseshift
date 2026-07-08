@@ -5,6 +5,21 @@ All notable changes to `tool_courseshift` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] — 2026-07-08
+
+### Fixed
+- Security: the apply/schedule/preview POST handlers accepted arbitrary course
+  ids; every course is now checked against `moodle/course:update` for the
+  acting user before being previewed or shifted.
+- Scheduled (adhoc) shifts now run as the scheduling user (`set_userid`), so
+  the capability check, audit event and undo snapshot are attributed correctly
+  and the monitor panel no longer shows an unknown user.
+- Replaced hard-coded German table headings on the per-course date form with
+  language strings (new strings `percourse_th_course/current/new`).
+
+### Removed
+- Dead private helper `shifter::shift_activity_dates()`.
+
 ## [1.0.0] — 2026-05-19
 
 ### Changed

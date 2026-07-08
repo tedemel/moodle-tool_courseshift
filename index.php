@@ -218,6 +218,9 @@ if ($action === 'schedule') {
     $percoursedates = optional_param_array('percoursedates', [], PARAM_INT);
 
     $task = new \tool_courseshift\task\scheduled_shift();
+    // Run as the scheduling user so the per-course capability check, the
+    // audit event and the undo snapshot are attributed correctly.
+    $task->set_userid($USER->id);
     $task->set_custom_data([
         'courseids'      => array_map('intval', $courseids),
         'mode'           => $mode,
@@ -362,7 +365,11 @@ if ($data = $form->get_data()) {
         echo $hiddeninput('scheduled', $scheduled);
 
         $table = new \html_table();
-        $table->head = ['Kurs', 'Aktuelles Startdatum', 'Neues Startdatum'];
+        $table->head = [
+            get_string('percourse_th_course', 'tool_courseshift'),
+            get_string('percourse_th_current', 'tool_courseshift'),
+            get_string('percourse_th_new', 'tool_courseshift'),
+        ];
         $table->attributes['class'] = 'table table-sm';
         foreach ($courseids as $cid) {
             $cid = (int)$cid;
